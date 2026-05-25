@@ -121,8 +121,8 @@ tr:hover .sticky-col{background:#f8fafc}
 <div id="modal-bg" onclick="closeModal(event)"><div id="modal" onclick="event.stopPropagation()"></div></div>
 <script>
 const SK = 'kn-rooster-v7';
-const SUPABASE_URL = 'VUL_HIER_JE_SUPABASE_URL_IN';
-const SUPABASE_KEY = 'VUL_HIER_JE_ANON_PUBLIC_KEY_IN';
+const SUPABASE_URL = 'https://lotmmdtzxbiaysrvtzij.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_VlKZnGFVE5aDSs9M1XI8GQ_jxJtQTjI';
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function laadVanDatabase() {
