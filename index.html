@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="nl-BE">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,19 +11,18 @@
   <div id="app-shell">
     <div id="topbar">
       <h1>KNeindhout</h1>
-      <button class="nav-tab active" onclick="showTab('rooster')">Rooster</button>
-      <button class="nav-tab" onclick="showTab('kalender')">Kalender</button>
-      <button class="nav-tab" onclick="showTab('rechten')">Verlofrechten</button>
-      <button class="nav-tab" onclick="showTab('saldo')">Saldo MU</button>
-      <button class="nav-tab" onclick="showTab('planning')">Planning</button>
-      <button class="nav-tab" onclick="showTab('medewerkers')">Medewerkers</button>
-      <button class="nav-tab" onclick="showTab('instellingen')">✉ E-mail</button>
+      <button class="nav-tab active" data-tab="rooster" onclick="setTab('rooster')">📅 Uurrooster</button>
+      <button class="nav-tab" data-tab="kalender" onclick="setTab('kalender')">🗓 Kalender</button>
+      <button class="nav-tab" data-tab="verlof" onclick="setTab('verlof')">📊 Verlofrechten</button>
+      <button class="nav-tab" data-tab="planning" onclick="setTab('planning')">📍 Werfplanning</button>
+      <button class="nav-tab" data-tab="instellingen" onclick="setTab('instellingen')">⚙ Instellingen</button>
     </div>
+
     <div id="content"></div>
   </div>
 
-  <div id="modal-bg" onclick="closeModal(event)">
-    <div id="modal" onclick="event.stopPropagation()"></div>
+  <div id="modal-bg" onclick="if(event.target===this) closeModal()">
+    <div id="modal"></div>
   </div>
 
   <script src="app.js"></script>
