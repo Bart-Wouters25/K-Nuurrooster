@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KNeindhout — Verlof & Uurrooster</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;font-size:14px;color:#1e293b;background:#f1f5f9}
+button{font-family:inherit;cursor:pointer}
+input,select{font-family:inherit;font-size:13px}
+#app-shell{display:flex;flex-direction:column;min-height:100vh}
+#topbar{background:#1e293b;padding:0 20px;display:flex;align-items:center;height:52px;overflow-x:auto;gap:0;flex-shrink:0}
+#topbar h1{font-size:15px;font-weight:600;margin-right:24px;white-space:nowrap;color:#fff}
+.nav-tab{height:52px;padding:0 14px;border:none;background:none;color:#94a3b8;font-size:13px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;font-weight:500;transition:color .15s}
+.nav-tab:hover{color:#e2e8f0}
+.nav-tab.active{color:#fff;border-bottom:3px solid #60a5fa}
+#content{flex:1;padding:20px;overflow:auto}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-size:14px;font-weight:600;color:#0f172a}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th{background:#f8fafc;color:#64748b;font-weight:600;padding:7px 9px;text-align:left;border-bottom:1px solid #e2e8f0;white-space:nowrap;position:sticky;top:0;z-index:2;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+td{padding:6px 9px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+tr:hover td{background:#f8fafc}
+.badge{display:inline-block;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:600;white-space:nowrap}
+.b-aanw{background:#dcfce7;color:#166534}.b-av{background:#dbeafe;color:#1e40af}.b-v{background:#fef9c3;color:#854d0e}
+.b-fv{background:#fef3c7;color:#92400e}.b-z{background:#fee2e2;color:#991b1b}.b-mu{background:#f3e8ff;color:#6b21a8}
+.b-rec{background:#e0e7ff;color:#3730a3}.b-aap{background:#cffafe;color:#155e75}.b-r1q{background:#ffedd5;color:#c2410c}
+.b-r2q{background:#fde8e8;color:#9f1239}.b-r3q{background:#ecfccb;color:#3f6212}.b-r4q{background:#f1f5f9;color:#475569}
+.b-col{background:#fef9c3;color:#713f12}.b-fee{background:#fee2e2;color:#991b1b}.b-blocked{background:#f1f5f9;color:#94a3b8}
+/* MODAL */
+#modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(3px);z-index:100;align-items:center;justify-content:center}
+#modal-bg.open{display:flex}
+#modal{background:#fff;border-radius:16px;padding:28px;width:520px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(15,23,42,.3),0 0 0 1px rgba(15,23,42,.06);color:#0f172a}
+#modal h2{font-size:17px;font-weight:700;margin-bottom:6px;color:#0f172a}
+#modal .modal-sub{font-size:13px;color:#64748b;margin-bottom:18px;padding-bottom:16px;border-bottom:1.5px solid #f1f5f9}
+#modal label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;margin-top:12px}
+#modal input[type=text],#modal input[type=number],#modal input[type=time],#modal input[type=date],#modal select{
+  width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;background:#fff;color:#0f172a;font-size:13px;font-family:inherit;transition:border-color .15s}
+#modal input:focus,#modal select:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.code-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.code-btn{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;border:1.5px solid #e2e8f0;background:#f8fafc;color:#1e293b;font-size:12px;text-align:left;cursor:pointer;transition:all .15s}
+.code-btn:hover:not(.blocked){border-color:#94a3b8;background:#f1f5f9}
+.code-btn.selected{border-color:#1e293b;background:#1e293b;color:#fff}
+.code-btn.selected .badge{opacity:.9}
+.code-btn.blocked{opacity:.4;cursor:not-allowed}
+.code-btn .reason{font-size:10px;color:#64748b;margin-top:1px}
+.code-btn.selected .reason{color:#94a3b8}
+.code-btn.danger-reason .reason{color:#dc2626}
+.modal-footer{display:flex;gap:8px;margin-top:20px;padding-top:18px;border-top:1.5px solid #f1f5f9}
+.extra-box{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;margin-top:4px;margin-bottom:4px}
+/* BUTTONS */
+.btn{padding:8px 16px;border:1.5px solid #d1d5db;border-radius:8px;background:#fff;color:#374151;font-size:13px;font-weight:500;transition:all .15s}
+.btn:hover{background:#f8fafc;border-color:#9ca3af}
+.btn-primary{background:#1e293b;color:#fff;border-color:#1e293b}
+.btn-primary:hover{background:#334155}
+.btn-sm{padding:4px 12px;font-size:12px}
+.btn-danger{border-color:#fca5a5;color:#dc2626;background:#fff}
+.btn-danger:hover{background:#fef2f2}
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-head{text-align:center;font-size:11px;color:#64748b;padding:5px 0;font-weight:600}
+.cal-day{min-height:56px;border-radius:8px;display:flex;flex-direction:column;align-items:center;padding-top:7px;font-size:13px;cursor:pointer;border:1.5px solid #e2e8f0;gap:2px;transition:all .15s}
+.cal-day:hover:not(.weekend){box-shadow:0 0 0 2px #64748b;border-color:#64748b}
+.cal-day.weekend{background:#f8fafc;color:#cbd5e1;cursor:default}
+.cal-day.is-holiday{background:#fef2f2;border-color:#fca5a5}
+.cal-day.is-collective{background:#fefce8;border-color:#fde68a}
+.cal-day.today{box-shadow:0 0 0 2.5px #1e293b}
+.cal-day-num{font-weight:600;line-height:1}
+.cal-day-label{font-size:9px;text-align:center;line-height:1.2;max-width:90%;padding:0 3px;word-break:break-word}
+.is-holiday .cal-day-label{color:#dc2626}
+.is-collective .cal-day-label{color:#92400e}
+/* ROOSTER */
+.rooster-day{text-align:center;min-width:32px;cursor:pointer;transition:background .1s}
+.rooster-day:hover{background:#dbeafe!important;border-radius:4px}
+.day-th{font-size:10px;padding:5px 2px;min-width:32px;text-align:center}
+.sticky-col{position:sticky;left:0;background:#fff;z-index:1}
+tr:hover .sticky-col{background:#f8fafc}
+.wl-label{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#1d4ed8;background:#dbeafe;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.divider-row td{padding:0;border:none;height:4px;background:#1e293b}
+/* PLANNING */
+.plan-person{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid #f1f5f9}
+.plan-person.is-wl{border-left:3px solid #2563eb}
+.plan-person.is-ext{border-left:3px dashed #d97706}
+.plan-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.av-wl{background:#dbeafe;color:#1d4ed8}.av-std{background:#f1f5f9;color:#64748b}.av-ext{background:#fff7ed;color:#c2410c}
+.task-chip{padding:3px 10px;border-radius:20px;font-size:11px;background:#f1f5f9;border:1px solid #e2e8f0;cursor:pointer;transition:all .1s}
+.task-chip:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626}
+.add-task-btn{font-size:11px;padding:3px 10px;border-radius:20px;border:1.5px dashed #cbd5e1;background:none;color:#94a3b8;cursor:pointer;transition:all .1s}
+.add-task-btn:hover{background:#f8fafc;color:#475569;border-color:#94a3b8}
+.section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;padding:7px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0}
+.task-count-table{width:100%;border-collapse:collapse;font-size:12px}
+.task-count-table th{background:#f8fafc;color:#64748b;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:7px 10px;border-bottom:1px solid #e2e8f0}
+.task-count-table td{padding:7px 10px;border-bottom:1px solid #f1f5f9}
+.task-count-table tr:last-child td{border:none}
+/* PROGRESS */
+.progress-bar{height:4px;border-radius:2px;background:#e2e8f0;width:60px;margin-top:3px}
+.progress-fill{height:4px;border-radius:2px}
+/* TEAMS INFO */
+.info-box{border:2px solid #93c5fd;background:#eff6ff;border-radius:10px;padding:16px}
+.info-box h3{font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:10px}
+.info-box ol{font-size:13px;line-height:1.9;padding-left:20px;color:#1e40af}
+.info-box p{font-size:12px;color:#3b82f6;margin-top:10px}
+@media print{
+  #topbar,.no-print{display:none!important}
+  #content{padding:0}
+  .card{border:1px solid #ccc;page-break-inside:avoid;box-shadow:none}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+<div id="app-shell">
+  <div id="topbar">
+    <h1>KNeindhout</h1>
+    <button class="nav-tab active" onclick="showTab('rooster')">Rooster</button>
+    <button class="nav-tab" onclick="showTab('kalender')">Kalender</button>
+    <button class="nav-tab" onclick="showTab('rechten')">Verlofrechten</button>
+    <button class="nav-tab" onclick="showTab('saldo')">Saldo MU</button>
+    <button class="nav-tab" onclick="showTab('planning')">Planning</button>
+    <button class="nav-tab" onclick="showTab('medewerkers')">Medewerkers</button>
+    <button class="nav-tab" onclick="showTab('instellingen')">✉ E-mail</button>
+  </div>
+  <div id="content"></div>
+</div>
+<div id="modal-bg" onclick="closeModal(event)"><div id="modal" onclick="event.stopPropagation()"></div></div>
+<script>
+const SK='kn-rooster-v7';
+let S=load();
+
+function calcBelgianHolidays(y){
+  function easter(y){
+    const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,
+      f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
+      i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),
+      mo=Math.floor((h+l-7*m+114)/31),dy=((h+l-7*m+114)%31)+1;
+    return new Date(y,mo-1,dy);
+  }
+  const E=easter(y),ep=n=>new Date(E.getTime()+n*864e5),asc=ep(39);
+  const p=d=>d.toISOString().slice(0,10);
+  return [
+    {date:p(new Date(y,0,1)),label:'Nieuwjaar',type:'holiday'},
+    {date:p(ep(-2)),label:'Goede vrijdag',type:'holiday'},
+    {date:p(ep(1)),label:'Paasmaandag',type:'holiday'},
+    {date:p(new Date(y,4,1)),label:'Dag v/d Arbeid',type:'holiday'},
+    {date:p(asc),label:'O.H. Hemelvaart',type:'holiday'},
+    {date:p(ep(50)),label:'Pinkstermaandag',type:'holiday'},
+    {date:p(new Date(y,6,21)),label:'Nationale Feestdag',type:'holiday'},
+    {date:p(new Date(y,7,15)),label:'O.L.V. Hemelvaart',type:'holiday'},
+    {date:p(new Date(y,10,1)),label:'Allerheiligen',type:'holiday'},
+    {date:p(new Date(y,10,11)),label:'Wapenstilstand',type:'holiday'},
+    {date:p(new Date(y,11,25)),label:'Kerstmis',type:'holiday'},
+    {date:p(new Date(y,0,2)),label:'Collectief',type:'collective'},
+    {date:p(new Date(y,10,2)),label:'Allerzielen - coll.',type:'collective'},
+    {date:p(new Date(y,11,24)),label:'Collectief',type:'collective'},
+    {date:p(new Date(y,11,28)),label:'Collectief',type:'collective'},
+    {date:p(new Date(y,11,29)),label:'Collectief',type:'collective'},
+    {date:p(new Date(y,11,30)),label:'Collectief',type:'collective'},
+    {date:p(new Date(y,11,31)),label:'Collectief',type:'collective'},
+  ];
+}
+function ensureYearSpecials(y){
+  if(!Object.keys(S.specials).some(d=>d.startsWith(String(y)))){
+    calcBelgianHolidays(y).forEach(h=>{S.specials[h.date]={type:h.type,label:h.label};});
+    save();
+  }
+}
+function defaultSpecials(){
+  const sp={};
+  [2026,2027,2028,2029].forEach(y=>calcBelgianHolidays(y).forEach(h=>{sp[h.date]={type:h.type,label:h.label};}));
+  return sp;
+}
+function defaultState(){
+  return {
+    employees:[
+      {id:1,naam:'Van De Water William',ad:8.5,role:'werkleider'},
+      {id:2,naam:'Vaneynde Rudi',ad:8.5,role:'werkleider'},
+      {id:3,naam:'Bednarek Erik',ad:8.5,role:'medewerker'},
+      {id:4,naam:'Cox Kris',ad:8.5,role:'medewerker'},
+      {id:5,naam:'Ariën Philippe',ad:8.5,role:'medewerker'},
+      {id:6,naam:'Jacobs Herman',ad:8.5,role:'medewerker'},
+      {id:7,naam:'Beutels Nanuska',ad:8.5,role:'medewerker'},
+      {id:8,naam:'Thielens Jan',ad:4.25,role:'medewerker'},
+      {id:9,naam:'Vanclee Maren',ad:8.5,role:'medewerker'},
+      {id:10,naam:'Busselen Jan',ad:4.25,role:'medewerker'},
+      {id:11,naam:'Willems Jelle',ad:8.5,role:'medewerker'},
+      {id:12,naam:'Nuyts Sofie',ad:8.5,role:'medewerker'},
+      {id:13,naam:'Bleux Benny',ad:8.5,role:'medewerker'},
+      {id:14,naam:'Daniels Dirk',ad:8.5,role:'medewerker'},
+      {id:15,naam:'Schols Robin',ad:8.5,role:'medewerker'},
+      {id:16,naam:'Van Roy Nadine',ad:8.5,role:'medewerker'},
+      {id:17,naam:'Frederix Martine',ad:8.5,role:'medewerker'},
+      {id:18,naam:'De Bie Johan',ad:8.5,role:'medewerker'},
+      {id:19,naam:'Fonteyn Julie',ad:8.5,role:'medewerker'}
+    ],
+    externen:[],rooster:{},rechten:{},specials:defaultSpecials(),
+    tasks:['Werf A - Grondwerken','Werf B - Metselwerk','Werf C - Afwerking','Magazijn','Administratie','Opleiding','Vergadering'],
+    planning:{},activeYear:2026,activeMonth:new Date().getMonth()+1,
+    activeTab:'rooster',planDate:toDateStr(new Date()),planView:'day',
+    emailOntvangers:[]
+  };
+}
+function load(){try{const r=localStorage.getItem(SK);if(r)return Object.assign(defaultState(),JSON.parse(r));}catch(e){}return defaultState();}
+function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function toDateStr(d){return d.toISOString().slice(0,10);}
+function getDayType(dateStr){const d=new Date(dateStr),dow=d.getDay();if(dow===0||dow===6)return 'weekend';const sp=S.specials[dateStr];if(sp)return sp.type;return 'work';}
+function getDayLabel(dateStr){return S.specials[dateStr]?S.specials[dateStr].label:'';}
+
+const CODES=['AANW','AV','V','FV','Z','MU','REC','AAP','R1Q','R2Q','R3Q','R4Q'];
+const CODE_INFO={
+  AANW:{label:'Aanwezig',cls:'b-aanw',hasHours:false},
+  AV:{label:'Arbeidsduurverm.',cls:'b-av',hasHours:false},
+  V:{label:'Verlof (dag)',cls:'b-v',hasHours:false,needsRight:true},
+  FV:{label:'Flexibel verlof',cls:'b-fv',hasHours:true,needsRight:true},
+  Z:{label:'Ziekte',cls:'b-z',hasHours:true,timeMode:true},
+  MU:{label:'Meeruren',cls:'b-mu',hasHours:true},
+  REC:{label:'Recuperatie',cls:'b-rec',hasHours:true},
+  AAP:{label:'AAP-uren',cls:'b-aap',hasHours:true,needsRight:true},
+  R1Q:{label:'Rimpel K1',cls:'b-r1q',hasHours:true,needsRight:true},
+  R2Q:{label:'Rimpel K2',cls:'b-r2q',hasHours:true,needsRight:true},
+  R3Q:{label:'Rimpel K3',cls:'b-r3q',hasHours:true,needsRight:true},
+  R4Q:{label:'Rimpel K4',cls:'b-r4q',hasHours:true,needsRight:true},
+};
+function quarter(dateStr){const m=new Date(dateStr).getMonth()+1;return m<=3?1:m<=6?2:m<=9?3:4;}
+
+function showTab(t){
+  S.activeTab=t;
+  const map={rooster:'Rooster',kalender:'Kalender',rechten:'Verlofrechten',saldo:'Saldo MU',planning:'Planning',medewerkers:'Medewerkers',instellingen:'✉ E-mail'};
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.toggle('active',b.textContent===map[t]));
+  render();
+}
+function render(){
+  const tabs={rooster:renderRooster,kalender:renderKalender,rechten:renderRechten,saldo:renderSaldo,planning:renderPlanning,medewerkers:renderMedewerkers,instellingen:renderInstellingen};
+  document.getElementById('content').innerHTML=(tabs[S.activeTab]||renderRooster)();
+}
+function daysInMonth(y,m){return new Date(y,m,0).getDate();}
+function dowNum(y,m,d){return new Date(y,m-1,d).getDay();}
+function initials(n){return n.split(' ').filter((_,i,a)=>i===0||i===a.length-1).map(p=>p[0]).join('').toUpperCase();}
+function padZ(n){return String(n).padStart(2,'0');}
+function ds(y,m,d){return `${y}-${padZ(m)}-${padZ(d)}`;}
+function getRoosterCell(empId,dateStr){return(S.rooster[empId]||{})[dateStr]||null;}
+function setRoosterCell(empId,dateStr,val){if(!S.rooster[empId])S.rooster[empId]={};S.rooster[empId][dateStr]=val;save();}
+function getRechten(empId,year){return((S.rechten[empId]||{})[year])||{V:0,FV:0,AAP:0,R1Q:0,R2Q:0,R3Q:0,R4Q:0,MU:0};}
+function setRechten(empId,year,obj){if(!S.rechten[empId])S.rechten[empId]={};S.rechten[empId][year]=obj;save();}
+function usedHours(empId,code,year){
+  let total=0;const emp=S.employees.find(e=>e.id===empId);const ad=emp?emp.ad:8.5;
+  for(let m=1;m<=12;m++){for(let d=1;d<=daysInMonth(year,m);d++){
+    const dateStr=ds(year,m,d);const cell=getRoosterCell(empId,dateStr);
+    if(!cell||cell.code!==code) continue;
+    if(code==='V'||code==='AV'||!CODE_INFO[code].hasHours) total+=ad;
+    else if(cell.hours!==undefined) total+=parseFloat(cell.hours)||0;
+    else total+=ad;
+  }}return total;
+}
+
+const MONTHS=['Jan','Feb','Mrt','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'];
+const MFULL=['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+
+function yearBar(showMonth){
+  const y=S.activeYear;
+  const maxY=Math.max(2030,y+2);
+  const yrs=[];for(let yr=2026;yr<=maxY;yr++) yrs.push(yr);
+  return `<div class="card no-print" style="padding:10px 16px">
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span style="font-size:12px;color:#64748b;font-weight:500">Jaar:</span>
+      ${yrs.map(yr=>`<button class="btn btn-sm ${yr===y?'btn-primary':''}" onclick="S.activeYear=${yr};ensureYearSpecials(${yr});render()">${yr}</button>`).join('')}
+      ${showMonth?`<span style="margin-left:16px;font-size:12px;color:#64748b;font-weight:500">Maand:</span>
+      ${MONTHS.map((mn,i)=>`<button class="btn btn-sm ${i+1===S.activeMonth?'btn-primary':''}" onclick="S.activeMonth=${i+1};render()">${mn}</button>`).join('')}`:''}
+    </div>
+  </div>`;
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+function openModal(html){document.getElementById('modal').innerHTML=html;document.getElementById('modal-bg').classList.add('open');}
+function closeModal(e){if(e&&e.target!==document.getElementById('modal-bg')) return;document.getElementById('modal-bg').classList.remove('open');render();}
+function forceClose(){document.getElementById('modal-bg').classList.remove('open');render();}
+
+function mField(label,inputHtml){return `<div><label>${label}</label>${inputHtml}</div>`;}
+function mSelect(id,opts,sel){return `<select id="${id}">${opts.map(([v,l])=>`<option value="${v}"${v===sel?' selected':''}>${l}</option>`).join('')}</select>`;}
+function mFooter(...btns){return `<div class="modal-footer">${btns.join('')}</div>`;}
+function mBtn(label,onclick,cls=''){return `<button class="btn ${cls}" onclick="${onclick}">${label}</button>`;}
+
+// ── KALENDER ──────────────────────────────────────────────────────────────
+function renderKalender(){
+  const y=S.activeYear,m=S.activeMonth,days=daysInMonth(y,m),firstDow=(dowNum(y,m,1)+6)%7;
+  const calDays=Array.from({length:days},(_,i)=>{
+    const d=i+1,dateStr=ds(y,m,d),dow2=dowNum(y,m,d),isWeekend=dow2===0||dow2===6;
+    const type=getDayType(dateStr),label=getDayLabel(dateStr);
+    let cls='cal-day';
+    if(isWeekend) cls+=' weekend';
+    else if(type==='holiday') cls+=' is-holiday';
+    else if(type==='collective') cls+=' is-collective';
+    if(dateStr===toDateStr(new Date())) cls+=' today';
+    return `<div class="${cls}"${isWeekend?'':` onclick="openDayEditor('${dateStr}')"`}>
+      <span class="cal-day-num">${d}</span>
+      ${label?`<span class="cal-day-label">${label}</span>`:''}
+    </div>`;
+  }).join('');
+  const allSpecials=Object.entries(S.specials).filter(([d])=>d.startsWith(String(y))).sort(([a],[b])=>a.localeCompare(b));
+  const rows=allSpecials.length
+    ?allSpecials.map(([d,sp])=>`<tr>
+        <td style="font-weight:500">${d}</td>
+        <td>${['Zo','Ma','Di','Wo','Do','Vr','Za'][new Date(d).getDay()]}</td>
+        <td><span class="badge ${sp.type==='holiday'?'b-fee':'b-col'}">${sp.type==='holiday'?'Feestdag':'Collectief'}</span></td>
+        <td>${sp.label||''}</td>
+        <td><button class="btn btn-sm" onclick="openDayEditor('${d}')">Bewerken</button>
+            <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="removeSpecial('${d}')">Wissen</button></td>
+      </tr>`).join('')
+    :`<tr><td colspan="5" style="color:#94a3b8">Geen sluitingsdagen voor ${y}</td></tr>`;
+  return yearBar(true)+`
+  <div class="card">
+    <div class="card-header"><span class="card-title">${MFULL[m-1]} ${y}</span>
+      <button class="btn btn-sm btn-primary" onclick="openDayEditorBlank()">+ Dag toevoegen</button></div>
+    <div class="cal-grid">
+      ${['Ma','Di','Wo','Do','Vr','Za','Zo'].map(d=>`<div class="cal-head">${d}</div>`).join('')}
+      ${Array(firstDow).fill('<div></div>').join('')}${calDays}
+    </div>
+    <div style="margin-top:12px;display:flex;gap:16px;font-size:12px;color:#64748b">
+      <span><span style="color:#dc2626">■</span> Feestdag</span>
+      <span><span style="color:#d97706">■</span> Collectief verlof</span>
+      <span>Klik op een werkdag om te bewerken</span>
+    </div>
+  </div>
+  <div class="card"><div class="card-header"><span class="card-title">Sluitingsdagen ${y}</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Datum</th><th>Dag</th><th>Type</th><th>Omschrijving</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>`;
+}
+function openDayEditor(dateStr){
+  const sp=S.specials[dateStr];
+  const d=new Date(dateStr);
+  const dayName=['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'][d.getDay()];
+  openModal(`<h2>${dayName}</h2><div class="modal-sub">${dateStr}</div>
+    ${mField('Type',mSelect('sp-type',[['work','Gewone werkdag'],['holiday','Feestdag'],['collective','Collectief verlof']],sp?sp.type:'work'))}
+    ${mField('Omschrijving',`<input id="sp-label" type="text" placeholder="bijv. Kerstmis..." value="${sp?sp.label:''}">`)}
+    ${mFooter(mBtn('Opslaan',`saveSpecial('${dateStr}')` ,'btn-primary'),sp?mBtn('Wissen',`removeSpecial('${dateStr}')` ,'btn-danger'):'',mBtn('Annuleren','forceClose()'))}
+  `);
+}
+function openDayEditorBlank(){
+  openModal(`<h2>Dag toevoegen</h2><div class="modal-sub">Markeer een werkdag als feestdag of collectief verlof</div>
+    ${mField('Datum',`<input id="sp-date" type="date" value="${S.activeYear}-01-01">`)}
+    ${mField('Type',mSelect('sp-type',[['holiday','Feestdag'],['collective','Collectief verlof']],'holiday'))}
+    ${mField('Omschrijving',`<input id="sp-label" type="text" placeholder="bijv. Brugdag...">`)}
+    ${mFooter(mBtn('Toevoegen','saveSpecialFromBlank()','btn-primary'),mBtn('Annuleren','forceClose()'))}
+  `);
+}
+function saveSpecial(dateStr){
+  const type=document.getElementById('sp-type').value,label=document.getElementById('sp-label').value.trim();
+  if(type==='work') delete S.specials[dateStr]; else S.specials[dateStr]={type,label:label||type};
+  save();forceClose();
+}
+function saveSpecialFromBlank(){
+  const dateStr=document.getElementById('sp-date').value,type=document.getElementById('sp-type').value,label=document.getElementById('sp-label').value.trim();
+  if(!dateStr) return;
+  const d=new Date(dateStr);
+  if(d.getDay()===0||d.getDay()===6){alert('Weekenddagen kunnen niet als sluiting worden ingegeven.');return;}
+  S.specials[dateStr]={type,label:label||type};save();forceClose();
+}
+function removeSpecial(dateStr){delete S.specials[dateStr];save();forceClose();}
+
+// ── ROOSTER ───────────────────────────────────────────────────────────────
+function renderRooster(){
+  const y=S.activeYear,m=S.activeMonth,days=daysInMonth(y,m);
+  let dayHeaders='';
+  for(let d=1;d<=days;d++){
+    const dateStr=ds(y,m,d),type=getDayType(dateStr);
+    const dn=['Z','M','D','W','D','V','Z'][dowNum(y,m,d)];
+    const bg=type==='holiday'?'#fef2f2':type==='collective'?'#fefce8':type==='weekend'?'#f8fafc':'';
+    const col=type==='holiday'?'#dc2626':type==='collective'?'#92400e':type==='weekend'?'#cbd5e1':'#64748b';
+    const lbl=getDayLabel(dateStr);
+    dayHeaders+=`<th class="day-th" style="background:${bg};color:${col}" title="${lbl||dateStr}">${dn}<br>${d}${lbl?'<br><span style="font-size:7px">★</span>':''}</th>`;
+  }
+  const wl=S.employees.filter(e=>e.role==='werkleider'),md=S.employees.filter(e=>e.role!=='werkleider');
+  function empRow(emp,isWL){
+    let cells='';
+    for(let d=1;d<=days;d++){
+      const dateStr=ds(y,m,d),type=getDayType(dateStr);
+      const cell=getRoosterCell(emp.id,dateStr),code=cell?cell.code:(type==='work'?'AANW':'');
+      const ci=CODE_INFO[code]||{};
+      const bg=type==='holiday'?'#fef2f2':type==='collective'?'#fefce8':type==='weekend'?'#f8fafc':'';
+      cells+=`<td class="rooster-day" style="background:${bg}" onclick="openCellEditor(${emp.id},'${dateStr}')">
+        ${code&&code!=='AANW'?`<span class="badge ${ci.cls||''}" style="font-size:9px;padding:1px 4px">${code}</span>`:(type==='work'?'<span style="font-size:10px;color:#d1d5db">✓</span>':'')}
+        ${cell&&cell.hours!==undefined?`<span style="font-size:9px;display:block;color:#94a3b8">${cell.hours}</span>`:''}
+      </td>`;
+    }
+    return `<tr><td class="sticky-col" style="min-width:165px;font-size:12px;font-weight:500;white-space:nowrap">${emp.naam}${isWL?'<span class="wl-label">WL</span>':''}</td>
+      <td style="text-align:center;color:#94a3b8;font-size:11px">${emp.ad}</td>${cells}</tr>`;
+  }
+  let rows='';
+  wl.forEach(e=>rows+=empRow(e,true));
+  rows+=`<tr class="divider-row"><td colspan="${days+2}"></td></tr>`;
+  md.forEach(e=>rows+=empRow(e,false));
+  return yearBar(true)+`
+  <div class="card" style="padding:0">
+    <div style="padding:14px 18px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <span class="card-title">${MFULL[m-1]} ${y}</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:11px;color:#94a3b8">Klik op een cel om te bewerken</span>
+        <button class="btn btn-sm no-print" onclick="stuurRooster()" style="background:#2563eb;color:#fff;border-color:#2563eb;display:flex;align-items:center;gap:5px">📤 Verstuur rooster</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th class="sticky-col" style="min-width:165px">Medewerker</th><th style="text-align:center;min-width:42px">AD</th>${dayHeaders}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>
+  <div class="card no-print" style="padding:10px 16px">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+      <span style="font-size:11px;color:#94a3b8;font-weight:500">CODES:</span>
+      ${CODES.map(c=>`<span class="badge ${(CODE_INFO[c]||{}).cls||''}">${c}</span>`).join('')}
+    </div>
+  </div>`;
+}
+
+function openCellEditor(empId,dateStr){
+  const type=getDayType(dateStr);if(type==='weekend') return;
+  const emp=S.employees.find(e=>e.id===empId);
+  const cell=getRoosterCell(empId,dateStr)||{code:'AANW'};
+  const y=new Date(dateStr).getFullYear(),r=getRechten(empId,y),q=quarter(dateStr),lbl=getDayLabel(dateStr);
+  const codeBtns=CODES.map(code=>{
+    const ci=CODE_INFO[code],sel=cell.code===code;
+    const isRimpel=code.startsWith('R')&&code.endsWith('Q'),rq=isRimpel?parseInt(code[1]):0;
+    const wrongQ=isRimpel&&rq!==q,right=r[code]||0,blocked=ci.needsRight&&right===0;
+    const used=ci.needsRight?usedHours(empId,code,y):0,exceeded=ci.needsRight&&right>0&&used>=right;
+    const disabled=wrongQ||blocked||exceeded;
+    let reason='',dangerR=false;
+    if(wrongQ) reason=`Alleen in K${q}`;
+    else if(blocked){reason='Geen verlofrecht ingesteld';dangerR=true;}
+    else if(exceeded){reason=`Saldo vol (${used.toFixed(1)}/${right}u)`;dangerR=true;}
+    else if(ci.needsRight&&right>0) reason=`Nog ${(right-used).toFixed(1)}u`;
+    return `<button class="code-btn${sel?' selected':''}${disabled?' blocked':''}${dangerR?' danger-reason':''}"
+      ${disabled?'disabled':''}
+      onclick="${disabled?'':'selectCode(\''+code+'\','+empId+',\''+dateStr+'\')'}">
+      <div style="display:flex;align-items:center;gap:7px">
+        <span class="badge ${ci.cls}">${code}</span>
+        <span style="font-weight:600;font-size:12px">${ci.label}</span>
+      </div>
+      ${reason?`<span class="reason">${reason}</span>`:''}
+    </button>`;
+  }).join('');
+  const dayLabelHtml=type!=='work'?`<span style="display:inline-block;margin-top:4px;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:500;background:${type==='holiday'?'#fee2e2':'#fef9c3'};color:${type==='holiday'?'#991b1b':'#854d0e'}">${lbl||type}</span>`:'';
+  openModal(`<h2>${emp.naam}</h2><div class="modal-sub">${dateStr} ${dayLabelHtml}</div>
+    <div class="code-grid">${codeBtns}</div>
+    <div id="extra-field"></div>
+    ${mFooter(mBtn('Dag wissen',`clearCell(${empId},'${dateStr}')` ,'btn-danger'),mBtn('Sluiten','forceClose()'))}
+  `);
+  if(cell.code&&CODE_INFO[cell.code]&&CODE_INFO[cell.code].hasHours) showExtraField(cell.code,empId,dateStr,cell.hours);
+}
+function selectCode(code,empId,dateStr){
+  const cell=getRoosterCell(empId,dateStr)||{};
+  cell.code=code;delete cell.hours;setRoosterCell(empId,dateStr,cell);
+  document.querySelectorAll('#modal .code-btn').forEach(b=>{const badge=b.querySelector('.badge');if(badge)b.classList.toggle('selected',badge.textContent.trim()===code);});
+  if(CODE_INFO[code]&&CODE_INFO[code].hasHours) showExtraField(code,empId,dateStr,null);
+  else{document.getElementById('extra-field').innerHTML='';render();}
+}
+function showExtraField(code,empId,dateStr,val){
+  const isTime=CODE_INFO[code]&&CODE_INFO[code].timeMode;
+  document.getElementById('extra-field').innerHTML=`<div class="extra-box">
+    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px">${isTime?'Vertrekuur (bijv. 10:30):':'Aantal uren:'}</label>
+    <input id="extra-input" type="${isTime?'time':'number'}" step="${isTime?'1':'0.25'}" value="${val||''}" style="max-width:180px;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;background:#fff;color:#0f172a;font-size:13px;font-family:inherit"
+      oninput="saveExtra(${empId},'${dateStr}',this.value)">
+  </div>`;
+}
+function saveExtra(empId,dateStr,val){const cell=getRoosterCell(empId,dateStr)||{code:'Z'};cell.hours=val;setRoosterCell(empId,dateStr,cell);render();}
+function clearCell(empId,dateStr){if(S.rooster[empId]) delete S.rooster[empId][dateStr];save();forceClose();}
+
+// ── VERLOFRECHTEN ─────────────────────────────────────────────────────────
+function renderRechten(){
+  const y=S.activeYear;
+  const fields=[{key:'V',label:'Verlof (u)'},{key:'FV',label:'Flex. (u)'},{key:'AAP',label:'AAP (u)'},{key:'R1Q',label:'K1 (u)'},{key:'R2Q',label:'K2 (u)'},{key:'R3Q',label:'K3 (u)'},{key:'R4Q',label:'K4 (u)'}];
+  const wl=S.employees.filter(e=>e.role==='werkleider'),md=S.employees.filter(e=>e.role!=='werkleider');
+  function empRow(emp,isWL){
+    const r=getRechten(emp.id,y);
+    return `<tr><td style="font-size:12px;font-weight:500;white-space:nowrap">${emp.naam}${isWL?'<span class="wl-label">WL</span>':''}</td>
+      <td style="text-align:center;color:#94a3b8;font-size:11px">${emp.ad}</td>
+      ${fields.map(f=>{
+        const used=usedHours(emp.id,f.key,y),right=r[f.key]||0,over=right>0&&used>right;
+        const pct=right>0?Math.min(100,Math.round(used/right*100)):0;
+        return `<td style="padding:4px 7px">
+          <input type="number" step="0.25" min="0" value="${right}"
+            style="width:60px;padding:4px 7px;border:1.5px solid ${over?'#fca5a5':'#d1d5db'};border-radius:6px;background:#fff;color:#0f172a"
+            onchange="updateRecht(${emp.id},${y},'${f.key}',this.value)">
+          ${right>0?`<div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${over?'#dc2626':'#22c55e'}"></div></div>
+          <span style="font-size:10px;color:${over?'#dc2626':'#94a3b8'}">${used.toFixed(1)}/${right}u</span>`:'<span style="font-size:10px;color:#cbd5e1">—</span>'}
+        </td>`;
+      }).join('')}
+    </tr>`;
+  }
+  let rows='';
+  wl.forEach(e=>rows+=empRow(e,true));
+  rows+=`<tr><td colspan="${fields.length+2}" style="height:4px;background:#1e293b;padding:0;border:none"></td></tr>`;
+  md.forEach(e=>rows+=empRow(e,false));
+  return yearBar(false)+`
+  <div class="card"><div class="card-header"><span class="card-title">Verlofrechten ${y}</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Medewerker</th><th>AD</th>${fields.map(f=>`<th style="text-align:center">${f.label}</th>`).join('')}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    <p style="margin-top:10px;font-size:11px;color:#94a3b8">Codes worden geblokkeerd in het rooster als het recht op 0 staat of volledig opgebruikt is.</p>
+  </div>`;
+}
+function updateRecht(empId,year,key,val){const r=getRechten(empId,year);r[key]=parseFloat(val)||0;setRechten(empId,year,r);render();}
+
+// ── SALDO MU ──────────────────────────────────────────────────────────────
+function renderSaldo(){
+  const y=S.activeYear;
+  const wl=S.employees.filter(e=>e.role==='werkleider'),md=S.employees.filter(e=>e.role!=='werkleider');
+  function empRow(emp,isWL){
+    const mu=usedHours(emp.id,'MU',y),rec=usedHours(emp.id,'REC',y),saldo=mu-rec;
+    return `<tr><td style="font-size:12px;font-weight:500">${emp.naam}${isWL?'<span class="wl-label">WL</span>':''}</td>
+      <td style="text-align:center"><span class="badge b-mu">${mu.toFixed(2)}u</span></td>
+      <td style="text-align:center"><span class="badge b-rec">${rec.toFixed(2)}u</span></td>
+      <td style="text-align:center;font-weight:700;color:${saldo<0?'#dc2626':saldo>0?'#16a34a':'#64748b'}">${saldo.toFixed(2)}u</td>
+    </tr>`;
+  }
+  let rows='';
+  wl.forEach(e=>rows+=empRow(e,true));
+  rows+=`<tr><td colspan="4" style="height:4px;background:#1e293b;padding:0;border:none"></td></tr>`;
+  md.forEach(e=>rows+=empRow(e,false));
+  return yearBar(false)+`
+  <div class="card"><div class="card-header"><span class="card-title">Saldo meeruren ${y}</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Medewerker</th><th style="text-align:center">Opgebouwd (MU)</th><th style="text-align:center">Gerecupereerd (REC)</th><th style="text-align:center">Saldo</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>`;
+}
+
+// ── PLANNING ──────────────────────────────────────────────────────────────
+function renderPlanning(){
+  const dateStr=S.planDate,d=new Date(dateStr);
+  const weekStart=new Date(d);weekStart.setDate(d.getDate()-(d.getDay()+6)%7);
+  const weekDays=Array.from({length:5},(_,i)=>{const wd=new Date(weekStart);wd.setDate(weekStart.getDate()+i);return toDateStr(wd);});
+  const wl=S.employees.filter(e=>e.role==='werkleider'),md=S.employees.filter(e=>e.role!=='werkleider'),ext=S.externen||[];
+
+  function taskCountPanel(dates){
+    const taskMap={};
+    [...S.employees,...ext].forEach(emp=>{dates.forEach(ds2=>{
+      ((S.planning[ds2]||{})[emp.id]||[]).forEach(t=>{if(!taskMap[t])taskMap[t]=new Set();taskMap[t].add(emp.id);});
+    });});
+    const entries=Object.entries(taskMap).sort((a,b)=>b[1].size-a[1].size);
+    if(!entries.length) return '<div class="card"><p style="font-size:12px;color:#94a3b8;text-align:center;padding:10px">Nog geen taken toegewezen</p></div>';
+    return `<div class="card" style="padding:0"><div style="padding:12px 16px;border-bottom:1px solid #f1f5f9"><span class="card-title">Takenoverzicht</span></div>
+      <table class="task-count-table"><thead><tr><th>Taak</th><th style="text-align:center">Personen</th></tr></thead>
+      <tbody>${entries.map(([task,empSet])=>`<tr>
+        <td style="font-weight:500">${task}</td>
+        <td style="text-align:center">
+          <span style="font-size:18px;font-weight:700;color:#1e293b">${empSet.size}</span>
+          <div style="font-size:10px;color:#94a3b8;margin-top:2px">${[...empSet].map(id=>{const e=[...S.employees,...ext].find(e=>e.id===id);return e?e.naam.split(' ')[0]:'?';}).join(', ')}</div>
+        </td>
+      </tr>`).join('')}</tbody></table>
+    </div>`;
+  }
+
+  function personRowDay(emp,avCls){
+    const type=getDayType(dateStr),cell=getRoosterCell(emp.id,dateStr),code=cell?cell.code:'AANW';
+    const absent=type!=='work'||['V','AV'].includes(code);
+    const tasks=((S.planning[dateStr]||{})[emp.id])||[];
+    const isWL=emp.role==='werkleider';
+    return `<div class="plan-person ${isWL?'is-wl':emp.isExtern?'is-ext':''}" style="${absent?'opacity:0.35':''}">
+      <div class="plan-avatar ${avCls}">${initials(emp.naam)}</div>
+      <div style="min-width:145px;font-size:12px;font-weight:500">${emp.naam}${isWL?'<span class="wl-label">WL</span>':''}</div>
+      ${code!=='AANW'&&!emp.isExtern?`<span class="badge ${(CODE_INFO[code]||{}).cls||''}">${code}</span>`:''}
+      <div style="display:flex;flex-wrap:wrap;gap:5px;flex:1">
+        ${tasks.map((t,i)=>`<span class="task-chip" onclick="removeTask(${emp.id},'${dateStr}',${i})">${t} ✕</span>`).join('')}
+        ${!absent?`<button class="add-task-btn" onclick="openAddTask(${emp.id},'${dateStr}')">+ taak</button>`:''}
+      </div>
+    </div>`;
+  }
+
+  const type=getDayType(dateStr);
+  const dayBody=type!=='work'
+    ?`<div style="padding:24px;text-align:center;color:#94a3b8">Geen werkdag${getDayLabel(dateStr)?' — '+getDayLabel(dateStr):''}</div>`
+    :`<div class="section-label">Werkleiders</div>${wl.map(e=>personRowDay(e,'av-wl')).join('')}
+      <div class="section-label" style="border-top:4px solid #1e293b">Medewerkers</div>${md.map(e=>personRowDay(e,'av-std')).join('')}
+      ${ext.length?`<div class="section-label" style="border-top:2px dashed #cbd5e1">Externen / Extra</div>${ext.map(e=>personRowDay({...e,isExtern:true},'av-ext')).join('')}`:''}`;
+
+  function weekCell(emp,wd){
+    const wtype=getDayType(wd),cell=getRoosterCell(emp.id,wd),code=cell?cell.code:'AANW';
+    const tasks=((S.planning[wd]||{})[emp.id])||[],absent=wtype!=='work'||['V','AV'].includes(code);
+    return `<td style="vertical-align:top;padding:5px;${absent?'background:#f8fafc':''}">
+      ${wtype!=='work'?`<span style="font-size:10px;color:#cbd5e1">${getDayLabel(wd)||'—'}</span>`:
+        `${code!=='AANW'&&!emp.isExtern?`<span class="badge ${(CODE_INFO[code]||{}).cls||''}" style="font-size:9px">${code}</span>`:''}
+        ${tasks.map((t,i)=>`<div style="margin-top:3px"><span class="task-chip" style="font-size:10px" onclick="removeTask(${emp.id},'${wd}',${i})">${t} ✕</span></div>`).join('')}
+        <button class="add-task-btn" style="font-size:10px;margin-top:3px" onclick="openAddTask(${emp.id},'${wd}')">+</button>`
+      }
+    </td>`;
+  }
+  function weekGroup(emps,label,borderStyle){
+    if(!emps.length) return '';
+    const isWL=emps[0].role==='werkleider';
+    return `<tr><td colspan="${weekDays.length+1}" style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;padding:7px 10px;background:#f8fafc;${borderStyle}">${label}</td></tr>`
+      +emps.map(emp=>`<tr><td style="font-size:12px;font-weight:500;white-space:nowrap;border-left:${isWL?'3px solid #2563eb':emp.isExtern?'3px dashed #d97706':'none'};padding-left:${isWL||emp.isExtern?'7px':'10px'}">${emp.naam}${isWL?'<span class="wl-label">WL</span>':''}</td>
+        ${weekDays.map(wd=>weekCell(emp,wd)).join('')}
+      </tr>`).join('');
+  }
+  const weekBody=`<div class="tbl-wrap"><table>
+    <thead><tr><th style="min-width:155px">Medewerker</th>
+      ${weekDays.map(wd=>{
+        const wtype=getDayType(wd),lbl=getDayLabel(wd),bg=wtype!=='work'?'background:#f8fafc':'';
+        const dn=['Ma','Di','Wo','Do','Vr'][new Date(wd).getDay()-1]||'';
+        return `<th style="text-align:center;${bg}">${dn} ${new Date(wd).getDate()}${lbl?'<br><span style="font-size:9px;opacity:.7">'+lbl+'</span>':''}</th>`;
+      }).join('')}
+    </tr></thead>
+    <tbody>
+      ${weekGroup(wl,'Werkleiders','border-top:4px solid #1e293b')}
+      ${weekGroup(md,'Medewerkers','border-top:4px solid #1e293b')}
+      ${ext.length?weekGroup(ext.map(e=>({...e,isExtern:true})),'Externen','border-top:2px dashed #cbd5e1'):''}
+    </tbody>
+  </table></div>`;
+
+  const activeDates=S.planView==='day'?[dateStr]:weekDays;
+  return `<div class="card no-print" style="padding:10px 16px">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <input type="date" value="${dateStr}" onchange="S.planDate=this.value;render()"
+        style="padding:6px 12px;border:1.5px solid #d1d5db;border-radius:8px;background:#fff;color:#0f172a">
+      <button class="btn btn-sm ${S.planView==='day'?'btn-primary':''}" onclick="S.planView='day';render()">Dag</button>
+      <button class="btn btn-sm ${S.planView==='week'?'btn-primary':''}" onclick="S.planView='week';render()">Week</button>
+      <button class="btn btn-sm no-print" onclick="openTaskManager()" style="margin-left:auto">Taken beheren</button>
+      <button class="btn btn-sm no-print" onclick="window.print()">🖨 Afdrukken</button>
+      <button class="btn btn-sm no-print" onclick="stuurPlanning('${dateStr}')" style="background:#2563eb;color:#fff;border-color:#2563eb">📤 Verstuur planning</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:14px;align-items:start">
+    <div><div class="card" style="padding:0">
+      <div style="padding:13px 18px;border-bottom:1px solid #f1f5f9">
+        <span class="card-title">Planning — ${S.planView==='day'?dateStr:'Week van '+toDateStr(weekStart)}</span>
+      </div>
+      ${S.planView==='day'?dayBody:weekBody}
+    </div></div>
+    <div>${taskCountPanel(activeDates)}</div>
+  </div>`;
+}
+
+function openAddTask(empId,dateStr){
+  const allEmps=[...S.employees,...(S.externen||[])],emp=allEmps.find(e=>e.id===empId);
+  openModal(`<h2>Taak toewijzen</h2><div class="modal-sub">${emp?emp.naam:''} — ${dateStr}</div>
+    ${mField('Selecteer taak',`<select id="task-sel">${S.tasks.map(t=>`<option>${t}</option>`).join('')}</select>`)}
+    ${mFooter(mBtn('Toevoegen',`addTask(${empId},'${dateStr}')` ,'btn-primary'),mBtn('Annuleren','forceClose()'))}
+  `);
+}
+function addTask(empId,dateStr){
+  const sel=document.getElementById('task-sel');if(!sel) return;
+  if(!S.planning[dateStr]) S.planning[dateStr]={};
+  if(!S.planning[dateStr][empId]) S.planning[dateStr][empId]=[];
+  S.planning[dateStr][empId].push(sel.value);
+  save();forceClose();
+}
+function removeTask(empId,dateStr,idx){if(S.planning[dateStr]&&S.planning[dateStr][empId]){S.planning[dateStr][empId].splice(idx,1);save();render();}}
+function openTaskManager(){
+  openModal(`<h2>Taken beheren</h2><div class="modal-sub">Voeg taken toe of verwijder ze uit het dropdown-menu</div>
+    <div id="task-list">${S.tasks.map((t,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f1f5f9">
+      <span style="flex:1;font-size:13px;font-weight:500;color:#0f172a">${t}</span>
+      <button class="btn btn-sm btn-danger" onclick="deleteTask(${i})">Verwijderen</button>
+    </div>`).join('')}</div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <input id="new-task" type="text" placeholder="Nieuwe taak..." style="flex:1">
+      <button class="btn btn-primary" onclick="addNewTask()">Toevoegen</button>
+    </div>
+    <div style="margin-top:12px">${mBtn('Sluiten','forceClose()')}</div>
+  `);
+}
+function addNewTask(){const inp=document.getElementById('new-task');if(!inp||!inp.value.trim()) return;S.tasks.push(inp.value.trim());save();openTaskManager();}
+function deleteTask(i){S.tasks.splice(i,1);save();openTaskManager();}
+
+// ── MEDEWERKERS ───────────────────────────────────────────────────────────
+function renderMedewerkers(){
+  const wl=S.employees.filter(e=>e.role==='werkleider'),md=S.employees.filter(e=>e.role!=='werkleider'),ext=S.externen||[];
+  function empRow(emp,isWL){
+    return `<tr><td style="font-size:12px;font-weight:500">${emp.naam}${isWL?'<span class="wl-label">WL</span>':''}</td>
+      <td style="text-align:center">
+        <input type="number" step="0.25" min="0" value="${emp.ad}"
+          style="width:72px;padding:4px 8px;border:1.5px solid #d1d5db;border-radius:6px;background:#fff;color:#0f172a"
+          onchange="updateAD(${emp.id},this.value)">
+      </td>
+      <td>
+        <select style="padding:4px 8px;border:1.5px solid #d1d5db;border-radius:6px;background:#fff;color:#0f172a;font-size:12px"
+          onchange="updateRole(${emp.id},this.value)">
+          <option${emp.role==='werkleider'?' selected':''} value="werkleider">Werkleider</option>
+          <option${emp.role!=='werkleider'?' selected':''} value="medewerker">Medewerker</option>
+        </select>
+      </td>
+      <td><button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.id})">Verwijderen</button></td>
+    </tr>`;
+  }
+  let rows='';
+  wl.forEach(e=>rows+=empRow(e,true));
+  rows+=`<tr><td colspan="4" style="height:4px;background:#1e293b;padding:0;border:none"></td></tr>`;
+  md.forEach(e=>rows+=empRow(e,false));
+  return `<div class="card">
+    <div class="card-header"><span class="card-title">Vaste medewerkers</span>
+      <button class="btn btn-sm btn-primary" onclick="openAddEmployee()">+ Toevoegen</button></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Naam</th><th style="text-align:center">AD/dag (u)</th><th>Rol</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Externen &amp; extra <span style="font-size:11px;color:#94a3b8;font-weight:400">(alleen planning)</span></span>
+      <button class="btn btn-sm btn-primary" onclick="openAddExtern()">+ Toevoegen</button></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Naam</th><th>Functie / Firma</th><th></th></tr></thead>
+      <tbody>${ext.length?ext.map((e,i)=>`<tr>
+        <td style="font-size:12px;font-weight:500">${e.naam}</td>
+        <td style="font-size:12px;color:#94a3b8">${e.functie||'—'}</td>
+        <td><button class="btn btn-sm btn-danger" onclick="deleteExtern(${i})">Verwijderen</button></td>
+      </tr>`).join(''):'<tr><td colspan="3" style="color:#94a3b8;font-size:12px">Nog geen externen</td></tr>'}</tbody>
+    </table></div>
+  </div>
+  <div class="info-box">
+    <h3>📌 Stap-voor-stap: uploaden naar Netlify (gratis, 2 minuten)</h3>
+    <ol>
+      <li>Sla dit bestand op via <strong>Ctrl+S</strong> → "Webpagina, alleen HTML" → sla op als <code>KNeindhout-rooster.html</code></li>
+      <li>Ga naar <a href="https://app.netlify.com/drop" target="_blank" style="color:#1d4ed8;font-weight:600">app.netlify.com/drop</a></li>
+      <li>Sleep het HTML-bestand in het grote vak op die pagina</li>
+      <li>Je krijgt automatisch een link zoals <code>https://amazing-name-123.netlify.app</code></li>
+      <li>Deel die link met je collega's — werkt op elke browser, geen login nodig</li>
+    </ol>
+    <p>⚠️ Elke gebruiker slaat data lokaal op in zijn eigen browser. Wijzigingen van één persoon zijn niet automatisch zichtbaar voor anderen.</p>
+  </div>`;
+}
+function updateAD(empId,val){const emp=S.employees.find(e=>e.id===empId);if(emp){emp.ad=parseFloat(val)||8.5;save();}}
+function updateRole(empId,val){const emp=S.employees.find(e=>e.id===empId);if(emp){emp.role=val;save();render();}}
+function deleteEmployee(empId){if(!confirm('Medewerker verwijderen?')) return;S.employees=S.employees.filter(e=>e.id!==empId);save();render();}
+function deleteExtern(idx){if(!confirm('Extern verwijderen?')) return;S.externen.splice(idx,1);save();render();}
+function openAddEmployee(){
+  openModal(`<h2>Medewerker toevoegen</h2><div class="modal-sub">Vul de gegevens in en kies een rol</div>
+    ${mField('Naam',`<input id="emp-naam" type="text" placeholder="Voornaam Achternaam">`)}
+    ${mField('AD/dag (uren)',`<input id="emp-ad" type="number" step="0.25" value="8.5">`)}
+    ${mField('Rol',mSelect('emp-role',[['medewerker','Medewerker'],['werkleider','Werkleider']],'medewerker'))}
+    ${mFooter(mBtn('Toevoegen','addEmployee()','btn-primary'),mBtn('Annuleren','forceClose()'))}
+  `);
+}
+function addEmployee(){
+  const naam=document.getElementById('emp-naam').value.trim(),ad=parseFloat(document.getElementById('emp-ad').value)||8.5,role=document.getElementById('emp-role').value;
+  if(!naam) return;
+  S.employees.push({id:Date.now(),naam,ad,role});save();forceClose();
+}
+function openAddExtern(){
+  openModal(`<h2>Extern / extra toevoegen</h2><div class="modal-sub">Verschijnt alleen in de planning, niet in rooster of verlofrechten</div>
+    ${mField('Naam',`<input id="ext-naam" type="text" placeholder="Voornaam Achternaam">`)}
+    ${mField('Functie / Firma (optioneel)',`<input id="ext-func" type="text" placeholder="Onderaannemer, Firma X...">`)}
+    ${mFooter(mBtn('Toevoegen','addExtern()','btn-primary'),mBtn('Annuleren','forceClose()'))}
+  `);
+}
+function addExtern(){
+  const naam=document.getElementById('ext-naam').value.trim(),functie=document.getElementById('ext-func').value.trim();
+  if(!naam) return;
+  if(!S.externen) S.externen=[];
+  S.externen.push({id:Date.now(),naam,functie});save();forceClose();
+}
+
+// ── E-MAIL FUNCTIES ───────────────────────────────────────────────────────
+function getOntvangers(){return S.emailOntvangers||[];}
+
+function buildRoosterTekst(){
+  const y=S.activeYear,m=S.activeMonth,days2=daysInMonth(y,m);
+  let txt='ROOSTER — '+MFULL[m-1]+' '+y+'\n'+'='.repeat(50)+'\n\n';
+  const wl=S.employees.filter(e=>e.role==='werkleider');
+  const md=S.employees.filter(e=>e.role!=='werkleider');
+  function empBlok(emp){
+    let afwijkingen=[];
+    for(let d2=1;d2<=days2;d2++){
+      const dateStr=ds(y,m,d2),type=getDayType(dateStr);
+      if(type==='weekend') continue;
+      const cell=getRoosterCell(emp.id,dateStr);
+      if(cell&&cell.code&&cell.code!=='AANW'){
+        const lbl=getDayLabel(dateStr);
+        afwijkingen.push('  '+dateStr+': '+cell.code+(cell.hours?' ('+cell.hours+')':'')+(lbl?' ['+lbl+']':''));
+      } else if(type!=='work'){
+        afwijkingen.push('  '+dateStr+': '+(getDayLabel(dateStr)||type));
+      }
+    }
+    const naam=emp.naam.padEnd(25);
+    if(!afwijkingen.length) return naam+' - Volledig aanwezig\n';
+    return naam+'\n'+afwijkingen.join('\n')+'\n';
+  }
+  txt+='WERKLEIDERS\n'+'-'.repeat(40)+'\n';
+  wl.forEach(e=>{txt+=empBlok(e);});
+  txt+='\nMEDEWERKERS\n'+'-'.repeat(40)+'\n';
+  md.forEach(e=>{txt+=empBlok(e);});
+  txt+='\n'+'='.repeat(50)+'\nVerstuurd vanuit KNeindhout Rooster App';
+  return txt;
+}
+
+function buildPlanningTekst(dateStr){
+  const d=new Date(dateStr);
+  const dagNaam=['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'][d.getDay()];
+  let txt='PLANNING — '+dagNaam+' '+dateStr+'\n'+'='.repeat(50)+'\n\n';
+  const wl=S.employees.filter(e=>e.role==='werkleider');
+  const md=S.employees.filter(e=>e.role!=='werkleider');
+  const ext=S.externen||[];
+  const type=getDayType(dateStr);
+  if(type!=='work'){
+    txt+='Geen werkdag'+(getDayLabel(dateStr)?' - '+getDayLabel(dateStr):'')+'\n';
+  } else {
+    function persoonRegel(emp){
+      const cell=getRoosterCell(emp.id,dateStr);
+      const code=cell?cell.code:'AANW';
+      const absent=['V','AV'].includes(code);
+      const tasks=((S.planning[dateStr]||{})[emp.id])||[];
+      const naamLabel=emp.naam+(emp.role==='werkleider'?' [WL]':'');
+      const status=absent?'['+code+']':'OK ';
+      const takenStr=tasks.length?' -> '+tasks.join(', '):'';
+      return status+'  '+naamLabel+takenStr+'\n';
+    }
+    txt+='WERKLEIDERS\n'+'-'.repeat(40)+'\n';
+    wl.forEach(e=>{txt+=persoonRegel(e);});
+    txt+='\nMEDEWERKERS\n'+'-'.repeat(40)+'\n';
+    md.forEach(e=>{txt+=persoonRegel(e);});
+    if(ext.length){txt+='\nEXTERNEN\n'+'-'.repeat(40)+'\n';ext.forEach(e=>{txt+=persoonRegel({...e,isExtern:true});});}
+  }
+  txt+='\n'+'='.repeat(50)+'\nVerstuurd vanuit KNeindhout Rooster App';
+  return txt;
+}
+
+function stuurRooster(){
+  const ont=getOntvangers();
+  if(!ont.length){alert('Geen e-mailadressen ingesteld.\nGa naar het tabblad E-mail om ontvangers toe te voegen.');showTab('instellingen');return;}
+  const sub=encodeURIComponent('Rooster KNeindhout - '+MFULL[S.activeMonth-1]+' '+S.activeYear);
+  const body=encodeURIComponent(buildRoosterTekst());
+  window.location.href='mailto:'+ont.join(',')+'?subject='+sub+'&body='+body;
+}
+
+function stuurPlanning(dateStr){
+  const ont=getOntvangers();
+  if(!ont.length){alert('Geen e-mailadressen ingesteld.\nGa naar het tabblad E-mail om ontvangers toe te voegen.');showTab('instellingen');return;}
+  const d=new Date(dateStr);
+  const dagNaam=['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'][d.getDay()];
+  const sub=encodeURIComponent('Planning KNeindhout - '+dagNaam+' '+dateStr);
+  const body=encodeURIComponent(buildPlanningTekst(dateStr));
+  window.location.href='mailto:'+ont.join(',')+'?subject='+sub+'&body='+body;
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function renderInstellingen(){
+  const ont=getOntvangers();
+  const tags=ont.map((e,i)=>`<div style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;background:#dbeafe;border:1px solid #bfdbfe;font-size:13px;color:#1d4ed8;margin:3px">${e} <button onclick="verwijderOntvanger(${i})" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:14px;line-height:1;padding:0 0 0 4px">✕</button></div>`).join('');
+  const voorbeeldTxt=escHtml(buildRoosterTekst().slice(0,500))+(buildRoosterTekst().length>500?'\n...':'');
+  return `<div class="card">
+    <div class="card-header"><span class="card-title">✉ E-mailinstellingen</span></div>
+    <p style="font-size:13px;color:#64748b;margin-bottom:16px;line-height:1.6">
+      Voeg de vaste e-mailadressen toe. De knoppen <strong>📤 Verstuur rooster</strong> en <strong>📤 Verstuur planning</strong>
+      openen je mailprogramma (Outlook, ...) met de ontvangers en inhoud al ingevuld. Jij drukt daarna nog op Verzenden.
+    </p>
+    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:8px">Ontvangers</label>
+    <div style="min-height:52px;padding:8px;border:1.5px solid #d1d5db;border-radius:10px;background:#fff;margin-bottom:10px">
+      ${tags||'<span style="font-size:12px;color:#94a3b8">Nog geen ontvangers — voeg er hieronder een toe</span>'}
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <input id="nieuw-email" type="email" placeholder="naam@bedrijf.be"
+        style="flex:1;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;background:#fff;color:#0f172a;font-size:13px"
+        onkeydown="if(event.key==='Enter'){voegOntvangerToe();event.preventDefault()}">
+      <button class="btn btn-primary" onclick="voegOntvangerToe()">+ Toevoegen</button>
+    </div>
+    <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:18px">
+      <p style="font-size:12px;font-weight:600;color:#374151;margin-bottom:10px">Voorbeeld e-mailinhoud (rooster ${MFULL[S.activeMonth-1]} ${S.activeYear})</p>
+      <pre style="font-size:11px;color:#475569;line-height:1.7;white-space:pre-wrap;word-break:break-all">${voorbeeldTxt}</pre>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" onclick="stuurRooster()" style="background:#2563eb;color:#fff;border-color:#2563eb;font-size:13px">
+        📤 Verstuur rooster — ${MFULL[S.activeMonth-1]} ${S.activeYear}
+      </button>
+      <button class="btn" onclick="stuurPlanning(S.planDate)" style="background:#2563eb;color:#fff;border-color:#2563eb;font-size:13px">
+        📤 Verstuur planning — ${S.planDate}
+      </button>
+    </div>
+    <p style="font-size:11px;color:#94a3b8;margin-top:14px">Na het klikken opent je e-mailprogramma met alles ingevuld. Jij stuurt het zelf nog op.</p>
+  </div>`;
+}
+
+function voegOntvangerToe(){
+  const inp=document.getElementById('nieuw-email');
+  if(!inp) return;
+  const val=inp.value.trim();
+  if(!val||!val.includes('@')){alert('Vul een geldig e-mailadres in.');return;}
+  if(!S.emailOntvangers) S.emailOntvangers=[];
+  if(S.emailOntvangers.includes(val)){alert('Dit adres staat er al bij.');return;}
+  S.emailOntvangers.push(val);
+  save();inp.value='';render();
+}
+
+function verwijderOntvanger(idx){
+  S.emailOntvangers.splice(idx,1);save();render();
+}
+
+render();
+</script>
+</body>
+</html>
