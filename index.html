@@ -307,7 +307,7 @@ function renderKalender(){
   const rows=allSpecials.length
     ?allSpecials.map(([d,sp])=>`<tr>
         <td style="font-weight:500">${d}</td>
-        <td>${['Zo','Ma','Di','Wo','Do','Vr','Za'][new Date(d.replace(/-/g, '/'))].getDay()]}</td>
+        <td>${['Zo','Ma','Di','Wo','Do','Vr','Za'][new Date(d.replace(/-/g, '/')).getDay()]}</td>
         <td><span class="badge ${sp.type==='holiday'?'b-fee':'b-col'}">${sp.type==='holiday'?'Feestdag':'Collectief'}</span></td>
         <td>${sp.label||''}</td>
         <td><button class="btn btn-sm" onclick="openDayEditor('${d}')">Bewerken</button>
