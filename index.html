@@ -6,7 +6,7 @@
 <title>KNeindhout — Verlof & Uurrooster</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;font-size:14px;color:#1e293b;background:#f1f5f9}
+body{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;font-family:system-ui,-apple-system,sans-serif;font-size:14px;color:#1e293b;background:#f1f5f9}
 button{font-family:inherit;cursor:pointer}
 input,select{font-family:inherit;font-size:13px}
 #app-shell{display:flex;flex-direction:column;min-height:100vh}
@@ -16,15 +16,15 @@ input,select{font-family:inherit;font-size:13px}
 .nav-tab:hover{color:#e2e8f0}
 .nav-tab.active{color:#fff;border-bottom:3px solid #60a5fa}
 #content{flex:1;padding:20px;overflow:auto}
-.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .card-title{font-size:14px;font-weight:600;color:#0f172a}
 .tbl-wrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:12px}
-th{background:#f8fafc;color:#64748b;font-weight:600;padding:7px 9px;text-align:left;border-bottom:1px solid #e2e8f0;white-space:nowrap;position:sticky;top:0;z-index:2;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
-td{padding:6px 9px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+table{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;border-collapse:collapse;width:100%;font-size:12px}
+th{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;background:#f8fafc;color:#64748b;font-weight:600;padding:7px 9px;text-align:left;border-bottom:1px solid #e2e8f0;white-space:nowrap;position:sticky;top:0;z-index:2;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+td{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;padding:6px 9px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
 tr:hover td{background:#f8fafc}
-.badge{display:inline-block;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;display:inline-block;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:600;white-space:nowrap}
 .b-aanw{background:#dcfce7;color:#166534}.b-av{background:#dbeafe;color:#1e40af}.b-v{background:#fef9c3;color:#854d0e}
 .b-fv{background:#fef3c7;color:#92400e}.b-z{background:#fee2e2;color:#991b1b}.b-mu{background:#f3e8ff;color:#6b21a8}
 .b-rec{background:#e0e7ff;color:#3730a3}.b-aap{background:#cffafe;color:#155e75}.b-r1q{background:#ffedd5;color:#c2410c}
@@ -52,7 +52,7 @@ tr:hover td{background:#f8fafc}
 .modal-footer{display:flex;gap:8px;margin-top:20px;padding-top:18px;border-top:1.5px solid #f1f5f9}
 .extra-box{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;margin-top:4px;margin-bottom:4px}
 /* BUTTONS */
-.btn{padding:8px 16px;border:1.5px solid #d1d5db;border-radius:8px;background:#fff;color:#374151;font-size:13px;font-weight:500;transition:all .15s}
+.btn{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;padding:8px 16px;border:1.5px solid #d1d5db;border-radius:8px;background:#fff;color:#374151;font-size:13px;font-weight:500;transition:all .15s}
 .btn:hover{background:#f8fafc;border-color:#9ca3af}
 .btn-primary{background:#1e293b;color:#fff;border-color:#1e293b}
 .btn-primary:hover{background:#334155}
@@ -62,7 +62,7 @@ tr:hover td{background:#f8fafc}
 /* CALENDAR */
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal-head{text-align:center;font-size:11px;color:#64748b;padding:5px 0;font-weight:600}
-.cal-day{min-height:56px;border-radius:8px;display:flex;flex-direction:column;align-items:center;padding-top:7px;font-size:13px;cursor:pointer;border:1.5px solid #e2e8f0;gap:2px;transition:all .15s}
+.cal-day{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;min-height:56px;border-radius:8px;display:flex;flex-direction:column;align-items:center;padding-top:7px;font-size:13px;cursor:pointer;border:1.5px solid #e2e8f0;gap:2px;transition:all .15s}
 .cal-day:hover:not(.weekend){box-shadow:0 0 0 2px #64748b;border-color:#64748b}
 .cal-day.weekend{background:#f8fafc;color:#cbd5e1;cursor:default}
 .cal-day.is-holiday{background:#fef2f2;border-color:#fca5a5}
@@ -78,19 +78,19 @@ tr:hover td{background:#f8fafc}
 .day-th{font-size:10px;padding:5px 2px;min-width:32px;text-align:center}
 .sticky-col{position:sticky;left:0;background:#fff;z-index:1}
 tr:hover .sticky-col{background:#f8fafc}
-.wl-label{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#1d4ed8;background:#dbeafe;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.wl-label{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;display:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#1d4ed8;background:#dbeafe;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:middle}
 .divider-row td{padding:0;border:none;height:4px;background:#1e293b}
 /* PLANNING */
-.plan-person{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid #f1f5f9}
+.plan-person{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid #f1f5f9}
 .plan-person.is-wl{border-left:3px solid #2563eb}
 .plan-person.is-ext{border-left:3px dashed #d97706}
-.plan-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.plan-avatar{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .av-wl{background:#dbeafe;color:#1d4ed8}.av-std{background:#f1f5f9;color:#64748b}.av-ext{background:#fff7ed;color:#c2410c}
-.task-chip{padding:3px 10px;border-radius:20px;font-size:11px;background:#f1f5f9;border:1px solid #e2e8f0;cursor:pointer;transition:all .1s}
+.task-chip{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;padding:3px 10px;border-radius:20px;font-size:11px;background:#f1f5f9;border:1px solid #e2e8f0;cursor:pointer;transition:all .1s}
 .task-chip:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626}
 .add-task-btn{font-size:11px;padding:3px 10px;border-radius:20px;border:1.5px dashed #cbd5e1;background:none;color:#94a3b8;cursor:pointer;transition:all .1s}
 .add-task-btn:hover{background:#f8fafc;color:#475569;border-color:#94a3b8}
-.section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;padding:7px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0}
+.section-label{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;padding:7px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0}
 .task-count-table{width:100%;border-collapse:collapse;font-size:12px}
 .task-count-table th{background:#f8fafc;color:#64748b;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:7px 10px;border-bottom:1px solid #e2e8f0}
 .task-count-table td{padding:7px 10px;border-bottom:1px solid #f1f5f9}
@@ -106,8 +106,8 @@ tr:hover .sticky-col{background:#f8fafc}
 @media print{
   #topbar,.no-print{display:none!important}
   #content{padding:0}
-  .card{border:1px solid #ccc;page-break-inside:avoid;box-shadow:none}
-  body{background:#fff}
+  .card{border:1px solid #e2e8f0!important;box-shadow:none!important;page-break-inside:avoid}
+  body{background:#f1f5f9!important}
 }
 </style>
 </head>
@@ -130,6 +130,13 @@ tr:hover .sticky-col{background:#f8fafc}
 const SK='kn-rooster-v7';
 let S=load();
  
+function localFmt(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function calcBelgianHolidays(y){
   function easter(y){
     const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,
@@ -139,26 +146,25 @@ function calcBelgianHolidays(y){
     return new Date(y,mo-1,dy);
   }
   const E=easter(y),ep=n=>new Date(E.getTime()+n*864e5),asc=ep(39);
-  const p=d=>d.toISOString().slice(0,10);
   return [
-    {date:p(new Date(y,0,1)),label:'Nieuwjaar',type:'holiday'},
-    {date:p(ep(-2)),label:'Goede vrijdag',type:'holiday'},
-    {date:p(ep(1)),label:'Paasmaandag',type:'holiday'},
-    {date:p(new Date(y,4,1)),label:'Dag v/d Arbeid',type:'holiday'},
-    {date:p(asc),label:'O.H. Hemelvaart',type:'holiday'},
-    {date:p(ep(50)),label:'Pinkstermaandag',type:'holiday'},
-    {date:p(new Date(y,6,21)),label:'Nationale Feestdag',type:'holiday'},
-    {date:p(new Date(y,7,15)),label:'O.L.V. Hemelvaart',type:'holiday'},
-    {date:p(new Date(y,10,1)),label:'Allerheiligen',type:'holiday'},
-    {date:p(new Date(y,10,11)),label:'Wapenstilstand',type:'holiday'},
-    {date:p(new Date(y,11,25)),label:'Kerstmis',type:'holiday'},
-    {date:p(new Date(y,0,2)),label:'Collectief',type:'collective'},
-    {date:p(new Date(y,10,2)),label:'Allerzielen - coll.',type:'collective'},
-    {date:p(new Date(y,11,24)),label:'Collectief',type:'collective'},
-    {date:p(new Date(y,11,28)),label:'Collectief',type:'collective'},
-    {date:p(new Date(y,11,29)),label:'Collectief',type:'collective'},
-    {date:p(new Date(y,11,30)),label:'Collectief',type:'collective'},
-    {date:p(new Date(y,11,31)),label:'Collectief',type:'collective'},
+    {date:localFmt(new Date(y,0,1)),label:'Nieuwjaar',type:'holiday'},
+    {date:localFmt(ep(-2)),label:'Goede vrijdag',type:'holiday'},
+    {date:localFmt(ep(1)),label:'Paasmaandag',type:'holiday'},
+    {date:localFmt(new Date(y,4,1)),label:'Dag v/d Arbeid',type:'holiday'},
+    {date:localFmt(asc),label:'O.H. Hemelvaart',type:'holiday'},
+    {date:localFmt(ep(50)),label:'Pinkstermaandag',type:'holiday'},
+    {date:localFmt(new Date(y,6,21)),label:'Nationale Feestdag',type:'holiday'},
+    {date:localFmt(new Date(y,7,15)),label:'O.L.V. Hemelvaart',type:'holiday'},
+    {date:localFmt(new Date(y,10,1)),label:'Allerheiligen',type:'holiday'},
+    {date:localFmt(new Date(y,10,11)),label:'Wapenstilstand',type:'holiday'},
+    {date:localFmt(new Date(y,11,25)),label:'Kerstmis',type:'holiday'},
+    {date:localFmt(new Date(y,0,2)),label:'Collectief',type:'collective'},
+    {date:localFmt(new Date(y,10,2)),label:'Allerzielen - coll.',type:'collective'},
+    {date:localFmt(new Date(y,11,24)),label:'Collectief',type:'collective'},
+    {date:localFmt(new Date(y,11,28)),label:'Collectief',type:'collective'},
+    {date:localFmt(new Date(y,11,29)),label:'Collectief',type:'collective'},
+    {date:localFmt(new Date(y,11,30)),label:'Collectief',type:'collective'},
+    {date:localFmt(new Date(y,11,31)),label:'Collectief',type:'collective'},
   ];
 }
 function ensureYearSpecials(y){
@@ -204,7 +210,7 @@ function defaultState(){
 }
 function load(){try{const r=localStorage.getItem(SK);if(r)return Object.assign(defaultState(),JSON.parse(r));}catch(e){}return defaultState();}
 function save(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
-function toDateStr(d){return d.toISOString().slice(0,10);}
+function toDateStr(d){return localFmt(d);}
 function getDayType(dateStr){const d=new Date(dateStr),dow=d.getDay();if(dow===0||dow===6)return 'weekend';const sp=S.specials[dateStr];if(sp)return sp.type;return 'work';}
 function getDayLabel(dateStr){return S.specials[dateStr]?S.specials[dateStr].label:'';}
  
@@ -260,8 +266,7 @@ const MFULL=['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus'
  
 function yearBar(showMonth){
   const y=S.activeYear;
-  const maxY=Math.max(2030,y+2);
-  const yrs=[];for(let yr=2026;yr<=maxY;yr++) yrs.push(yr);
+  const yrs=[];for(let yr=2026;yr<=2030;yr++) yrs.push(yr);
   return `<div class="card no-print" style="padding:10px 16px">
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
       <span style="font-size:12px;color:#64748b;font-weight:500">Jaar:</span>
@@ -292,7 +297,7 @@ function renderKalender(){
     if(isWeekend) cls+=' weekend';
     else if(type==='holiday') cls+=' is-holiday';
     else if(type==='collective') cls+=' is-collective';
-    if(dateStr===toDateStr(new Date())) cls+=' today';
+    if(dateStr===localFmt(new Date())) cls+=' today';
     return `<div class="${cls}"${isWeekend?'':` onclick="openDayEditor('${dateStr}')"`}>
       <span class="cal-day-num">${d}</span>
       ${label?`<span class="cal-day-label">${label}</span>`:''}
@@ -302,7 +307,7 @@ function renderKalender(){
   const rows=allSpecials.length
     ?allSpecials.map(([d,sp])=>`<tr>
         <td style="font-weight:500">${d}</td>
-        <td>${['Zo','Ma','Di','Wo','Do','Vr','Za'][new Date(d).getDay()]}</td>
+        <td>${['Zo','Ma','Di','Wo','Do','Vr','Za'][new Date(d.replace(/-/g, '/'))].getDay()]}</td>
         <td><span class="badge ${sp.type==='holiday'?'b-fee':'b-col'}">${sp.type==='holiday'?'Feestdag':'Collectief'}</span></td>
         <td>${sp.label||''}</td>
         <td><button class="btn btn-sm" onclick="openDayEditor('${d}')">Bewerken</button>
@@ -332,7 +337,7 @@ function renderKalender(){
 }
 function openDayEditor(dateStr){
   const sp=S.specials[dateStr];
-  const d=new Date(dateStr);
+  const d=new Date(dateStr.replace(/-/g, '/'));
   const dayName=['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'][d.getDay()];
   openModal(`<h2>${dayName}</h2><div class="modal-sub">${dateStr}</div>
     ${mField('Type',mSelect('sp-type',[['work','Gewone werkdag'],['holiday','Feestdag'],['collective','Collectief verlof']],sp?sp.type:'work'))}
@@ -356,7 +361,7 @@ function saveSpecial(dateStr){
 function saveSpecialFromBlank(){
   const dateStr=document.getElementById('sp-date').value,type=document.getElementById('sp-type').value,label=document.getElementById('sp-label').value.trim();
   if(!dateStr) return;
-  const d=new Date(dateStr);
+  const d=new Date(dateStr.replace(/-/g, '/'));
   if(d.getDay()===0||d.getDay()===6){alert('Weekenddagen kunnen niet als sluiting worden ingegeven.');return;}
   S.specials[dateStr]={type,label:label||type};save();forceClose();
 }
@@ -420,7 +425,7 @@ function openCellEditor(empId,dateStr){
   const type=getDayType(dateStr);if(type==='weekend') return;
   const emp=S.employees.find(e=>e.id===empId);
   const cell=getRoosterCell(empId,dateStr)||{code:'AANW'};
-  const y=new Date(dateStr).getFullYear(),r=getRechten(empId,y),q=quarter(dateStr),lbl=getDayLabel(dateStr);
+  const y=new Date(dateStr.replace(/-/g, '/')).getFullYear(),r=getRechten(empId,y),q=quarter(dateStr),lbl=getDayLabel(dateStr);
   const codeBtns=CODES.map(code=>{
     const ci=CODE_INFO[code],sel=cell.code===code;
     const isRimpel=code.startsWith('R')&&code.endsWith('Q'),rq=isRimpel?parseInt(code[1]):0;
@@ -532,9 +537,9 @@ function renderSaldo(){
  
 // ── PLANNING ──────────────────────────────────────────────────────────────
 function renderPlanning(){
-  const dateStr=S.planDate,d=new Date(dateStr);
+  const dateStr=S.planDate,d=new Date(dateStr.replace(/-/g, '/'));
   const weekStart=new Date(d);weekStart.setDate(d.getDate()-(d.getDay()+6)%7);
-  const weekDays=Array.from({length:5},(_,i)=>{const wd=new Date(weekStart);wd.setDate(weekStart.getDate()+i);return toDateStr(wd);});
+  const weekDays=Array.from({length:5},(_,i)=>{const wd=new Date(weekStart);wd.setDate(weekStart.getDate()+i);return localFmt(wd);});
   const wl=S.employees.filter(e=>e.role==='werkleider'),md=S.employees.filter(e=>e.role!=='werkleider'),ext=S.externen||[];
  
   function taskCountPanel(dates){
@@ -567,7 +572,7 @@ function renderPlanning(){
       ${code!=='AANW'&&!emp.isExtern?`<span class="badge ${(CODE_INFO[code]||{}).cls||''}">${code}</span>`:''}
       <div style="display:flex;flex-wrap:wrap;gap:5px;flex:1">
         ${tasks.map((t,i)=>`<span class="task-chip" onclick="removeTask(${emp.id},'${dateStr}',${i})">${t} ✕</span>`).join('')}
-        ${!absent?`<button class="add-task-btn" onclick="openAddTask(${emp.id},'${dateStr}')">+ taak</button>`:''}
+        ${!absent?`<button class="add-task-btn no-print" onclick="openAddTask(${emp.id},'${dateStr}')">+ taak</button>`:''}
       </div>
     </div>`;
   }
@@ -586,7 +591,7 @@ function renderPlanning(){
       ${wtype!=='work'?`<span style="font-size:10px;color:#cbd5e1">${getDayLabel(wd)||'—'}</span>`:
         `${code!=='AANW'&&!emp.isExtern?`<span class="badge ${(CODE_INFO[code]||{}).cls||''}" style="font-size:9px">${code}</span>`:''}
         ${tasks.map((t,i)=>`<div style="margin-top:3px"><span class="task-chip" style="font-size:10px" onclick="removeTask(${emp.id},'${wd}',${i})">${t} ✕</span></div>`).join('')}
-        <button class="add-task-btn" style="font-size:10px;margin-top:3px" onclick="openAddTask(${emp.id},'${wd}')">+</button>`
+        <button class="add-task-btn no-print" style="font-size:10px;margin-top:3px" onclick="openAddTask(${emp.id},'${wd}')">+</button>`
       }
     </td>`;
   }
@@ -602,8 +607,8 @@ function renderPlanning(){
     <thead><tr><th style="min-width:155px">Medewerker</th>
       ${weekDays.map(wd=>{
         const wtype=getDayType(wd),lbl=getDayLabel(wd),bg=wtype!=='work'?'background:#f8fafc':'';
-        const dn=['Ma','Di','Wo','Do','Vr'][new Date(wd).getDay()-1]||'';
-        return `<th style="text-align:center;${bg}">${dn} ${new Date(wd).getDate()}${lbl?'<br><span style="font-size:9px;opacity:.7">'+lbl+'</span>':''}</th>`;
+        const dn=['Ma','Di','Wo','Do','Vr'][new Date(wd.replace(/-/g, '/')).getDay()-1]||'';
+        return `<th style="text-align:center;${bg}">${dn} ${new Date(wd.replace(/-/g, '/')).getDate()}${lbl?'<br><span style="font-size:9px;opacity:.7">'+lbl+'</span>':''}</th>`;
       }).join('')}
     </tr></thead>
     <tbody>
@@ -628,7 +633,7 @@ function renderPlanning(){
   <div style="display:grid;grid-template-columns:1fr 280px;gap:14px;align-items:start">
     <div><div class="card" style="padding:0">
       <div style="padding:13px 18px;border-bottom:1px solid #f1f5f9">
-        <span class="card-title">Planning — ${S.planView==='day'?dateStr:'Week van '+toDateStr(weekStart)}</span>
+        <span class="card-title">Planning — ${S.planView==='day'?dateStr:'Week van '+localFmt(new Date(weekStart))}</span>
       </div>
       ${S.planView==='day'?dayBody:weekBody}
     </div></div>
@@ -711,8 +716,8 @@ function renderMedewerkers(){
       </tr>`).join(''):'<tr><td colspan="3" style="color:#94a3b8;font-size:12px">Nog geen externen</td></tr>'}</tbody>
     </table></div>
   </div>
-  <div class="info-box">
-    <h3>📌 Stap-voor-stap: uploaden naar Netlify (gratis, 2 minuten)</h3>
+  <div class="info-box no-print">
+    <h3>📌 Stap-voor-stap: uploaden naar Netlify (gratis, 2 minutes)</h3>
     <ol>
       <li>Sla dit bestand op via <strong>Ctrl+S</strong> → "Webpagina, alleen HTML" → sla op als <code>KNeindhout-rooster.html</code></li>
       <li>Ga naar <a href="https://app.netlify.com/drop" target="_blank" style="color:#1d4ed8;font-weight:600">app.netlify.com/drop</a></li>
@@ -788,7 +793,7 @@ function buildRoosterTekst(){
 }
  
 function buildPlanningTekst(dateStr){
-  const d=new Date(dateStr);
+  const d=new Date(dateStr.replace(/-/g, '/'));
   const dagNaam=['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'][d.getDay()];
   let txt='PLANNING — '+dagNaam+' '+dateStr+'\n'+'='.repeat(50)+'\n\n';
   const wl=S.employees.filter(e=>e.role==='werkleider');
@@ -829,7 +834,7 @@ function stuurRooster(){
 function stuurPlanning(dateStr){
   const ont=getOntvangers();
   if(!ont.length){alert('Geen e-mailadressen ingesteld.\nGa naar het tabblad E-mail om ontvangers toe te voegen.');showTab('instellingen');return;}
-  const d=new Date(dateStr);
+  const d=new Date(dateStr.replace(/-/g, '/'));
   const dagNaam=['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'][d.getDay()];
   const sub=encodeURIComponent('Planning KNeindhout - '+dagNaam+' '+dateStr);
   const body=encodeURIComponent(buildPlanningTekst(dateStr));
@@ -870,7 +875,7 @@ function renderInstellingen(){
         📤 Verstuur planning — ${S.planDate}
       </button>
     </div>
-    <p style="font-size:11px;color:#94a3b8;margin-top:14px">Na het klikken opent je e-mailprogramma met alles ingevuld. Jij stuurt het zelf nog op.</p>
+    <p style="font-size:11px;color:#94a3b8;margin-top:14px">Na het clicking opent je e-mailprogramma met alles ingevuld. Jij stuurt het zelf nog op.</p>
   </div>`;
 }
  
